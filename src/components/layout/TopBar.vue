@@ -294,7 +294,7 @@
         <v-list-item
           data-testid="quick-ign-legend-btn"
           prepend-icon="mdi-book-open-variant"
-          :title="$t('ignLegend')"
+          :title="$t('ignLegend.title')"
           @click="handleOpenMapLegend"
         />
       </v-list>
