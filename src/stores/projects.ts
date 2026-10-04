@@ -103,7 +103,7 @@ export const useProjectsStore = defineStore('projects', () => {
     }
   }
 
-  function createImageProject(name: string, imageData?: Record<string, unknown>): void {
+  function createImageProject(name: string, imageData?: unknown): void {
     createAndSwitchProject(name, 'mercator');
     if (activeProject.value) {
       activeProject.value.imageMapEnabled = true;
