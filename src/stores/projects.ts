@@ -5,6 +5,7 @@
 import type { ProjectData, ProjectLayerData, ProjectProjection, ViewData } from '@/types/project';
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
+import { type ImageMap, writeImageMap } from '@/services/imageMap';
 import * as pdfStorage from '@/services/pdfStorage';
 import * as storage from '@/services/storage';
 
@@ -103,12 +104,12 @@ export const useProjectsStore = defineStore('projects', () => {
     }
   }
 
-  function createImageProject(name: string, imageData?: unknown): void {
+  async function createImageProject(name: string, imageData?: unknown): Promise<void> {
     createAndSwitchProject(name, 'mercator');
-    if (activeProject.value) {
+    if (activeProject.value && activeProject.value.id) {
       activeProject.value.imageMapEnabled = true;
       if (imageData) {
-        // Link image data if provided
+        await writeImageMap(activeProject.value.id, imageData as ImageMap);
       }
       autoSaveActiveProject(activeProject.value.data, activeProject.value.projection);
     }
