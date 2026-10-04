@@ -965,6 +965,9 @@
     "show": "Show",
     "removeFromGroup": "Remove from group"
   },
+  "ignLegend": {
+    "title": "IGN Legends"
+  },
   "validation": {
     "required": "This field is required",
     "invalidNumber": "Must be a valid number",

@@ -965,6 +965,9 @@
     "show": "Afficher",
     "removeFromGroup": "Sortir du groupe"
   },
+  "ignLegend": {
+    "title": "Légende de la carte IGN"
+  },
   "validation": {
     "required": "Ce champ est requis",
     "invalidNumber": "Doit être un nombre valide",

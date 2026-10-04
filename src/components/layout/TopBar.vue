@@ -242,6 +242,7 @@
       </div>
     </v-navigation-drawer>
 
+    <!-- Menu contextuel Alt + Clic -->
     <v-menu
       data-testid="quick-tools-context-menu"
       location="bottom"
@@ -286,6 +287,16 @@
           :title="$t('workspace.pdf')"
           @click="handlePdfClick"
         />
+
+        <v-divider class="my-1" />
+
+        <!-- Option de la légende IGN intégrée dans le menu Alt + Clic -->
+        <v-list-item
+          data-testid="quick-ign-legend-btn"
+          prepend-icon="mdi-book-open-variant"
+          :title="$t('ignLegend')"
+          @click="handleOpenMapLegend"
+        />
       </v-list>
     </v-menu>
 
@@ -308,6 +319,9 @@
 
   <ThemePicker v-model="themePickerOpen" />
   <ImageMapModal v-if="imageMapOpen" @close="closeImageMap" />
+
+  <!-- Ajout de la modale de légende IGN ici -->
+  <MapLegendModal ref="mapLegendRef" />
 </template>
 
 <script lang="ts" setup>
@@ -316,6 +330,7 @@ import { useI18n } from 'vue-i18n';
 import NavigationBar from '@/components/layout/NavigationBar.vue';
 import ThemePicker from '@/components/layout/ThemePicker.vue';
 import ImageMapModal from '@/components/modals/ImageMapModal.vue';
+import MapLegendModal from '@/components/modals/MapLegendModal.vue'; // <-- Import ajouté
 import SidebarAddressSearch from '@/components/sidebar/SidebarAddressSearch.vue';
 import { useProjectFiles } from '@/composables/useProjectFiles';
 import { useImageMapStore } from '@/stores/imageMap';
@@ -329,6 +344,13 @@ const toolbarContent = ref<HTMLElement | null>(null);
 const toolbarHeight = ref(64);
 const normalToolbarContent = ref<HTMLElement | null>(null);
 const normalToolbarHeight = ref(134);
+
+// Référence et fonction pour la légende IGN
+const mapLegendRef = ref<InstanceType<typeof MapLegendModal> | null>(null);
+
+function handleOpenMapLegend() {
+  mapLegendRef.value?.open();
+}
 
 watch(normalToolbarContent, (element, _, onCleanup) => {
   if (!element) return;
@@ -456,19 +478,16 @@ const {
 } = useProjectFiles();
 
 function handlePdfClick() {
-  // If no active project, show error
   if (!projectsStore.activeProjectId) {
     uiStore.addToast(t('pdf.noProject'), 'error');
     return;
   }
 
-  // If project has PDF, toggle the panel
   if (projectsStore.hasPdf()) {
     uiStore.togglePdfPanel();
     return;
   }
 
-  // Otherwise, open file picker to upload PDF
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'application/pdf';
@@ -478,15 +497,13 @@ function handlePdfClick() {
       return;
     }
 
-    // Check file size (limit to 50MB for IndexedDB)
-    const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+    const MAX_SIZE = 50 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       uiStore.addToast(t('pdf.tooLarge'), 'error');
       return;
     }
 
     try {
-      // Convert to base64
       const reader = new FileReader();
       reader.addEventListener('load', async () => {
         const base64 = reader.result as string;
