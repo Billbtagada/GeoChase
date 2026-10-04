@@ -1243,7 +1243,8 @@
       "clockworkOrange": "A Clockwork Orange",
       "cyberpunk": "Cyberpunk",
       "vaporwaveNeon": "Vaporwave Neon",
-      "christmasTree": "Magic Christmas Tree"
+      "christmasTree": "Christmas Tree",
+      "strawberrymint": "strawberry mint"
     },
     "regularizeProjectTitle": "Save your work",
     "regularizeProjectDescription": "Your elements do not belong to a project. Name your project to keep them and continue.",
