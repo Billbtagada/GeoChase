@@ -75,12 +75,16 @@ export const useProjectsStore = defineStore('projects', () => {
     localStorage.setItem('geochase_activeProjectId', projectId || '');
   }
 
-  function createAndSwitchProject(name: string, projection: ProjectProjection = 'mercator'): void {
-    // Create new project with empty state and get the returned project
+  function createAndSwitchProject(
+    name: string,
+    projection: ProjectProjection = 'mercator',
+    initialData?: ProjectLayerData
+  ): void {
+    // Create new project with empty state (using elementGroups) and get the returned project
     const newProject = storage.saveProject(
       name,
-      {
-        groups: [], // <-- Ajouter l'initialisation ici
+      initialData || {
+        elementGroups: [],
         circles: [],
         lineSegments: [],
         points: [],
@@ -96,6 +100,33 @@ export const useProjectsStore = defineStore('projects', () => {
     // Set as active using the returned ID
     if (newProject.id) {
       setActiveProject(newProject.id);
+    }
+  }
+
+  function createImageProject(name: string, imageData?: Record<string, unknown>): void {
+    createAndSwitchProject(name, 'mercator');
+    if (activeProject.value) {
+      activeProject.value.imageMapEnabled = true;
+      if (imageData) {
+        // Link image data if provided
+      }
+      autoSaveActiveProject(activeProject.value.data, activeProject.value.projection);
+    }
+  }
+
+  function setImageMapEnabled(enabled: boolean): void {
+    if (!activeProjectId.value || !activeProject.value) {
+      return;
+    }
+    const current = activeProject.value;
+    const index = projects.value.indexOf(current);
+    if (index !== -1) {
+      projects.value[index] = {
+        ...current,
+        imageMapEnabled: enabled,
+        updatedAt: Date.now(),
+      };
+      storage.updateProject(index, current.name, current.data, current.projection);
     }
   }
 
@@ -284,6 +315,8 @@ export const useProjectsStore = defineStore('projects', () => {
     loadProjects,
     setActiveProject,
     createAndSwitchProject,
+    createImageProject,
+    setImageMapEnabled,
     autoSaveActiveProject,
     loadActiveProject,
     updateProject,
