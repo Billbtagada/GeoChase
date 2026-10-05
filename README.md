@@ -48,6 +48,17 @@ A web-based mapping application for solving geoportail treasure hunts through ge
 
 ### Data Management
 
+- **Undo / Redo**: Toolbar buttons, Ctrl/Cmd+Z to undo, Ctrl/Cmd+Shift+Z or Ctrl+Y to redo.
+  - Tracks drawings, notes, groups, element visibility and projection changes, including linked elements.
+  - Stores field-level changes, without copying unchanged drawings, PDF files or image backgrounds.
+    Existing steps are written once; undo/redo only updates the cursor and visibility.
+  - Keeps up to 1,000 steps within an 8 MiB history payload budget per project. Older undo steps
+    (then distant redo steps) are discarded when necessary, including on browser quota errors.
+    An edit larger than the budget clears older undo history and cannot itself be undone.
+    Editing after undo clears the redo branch.
+  - Each project keeps its history and undo/redo position in local browser storage (IndexedDB),
+    across reloads and project switches. History is excluded from JSON and GPX exports.
+    Restored project data is saved too. Typing in a field keeps native text undo/redo.
 - **Projects**: Organize drawings into named projects with auto-save to localStorage
 - **Point names**: Right-click the map and leave the name blank to use the nearest city when saving
 - **Export**: Projects as JSON, drawings as GPX files

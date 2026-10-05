@@ -370,6 +370,7 @@ export function useDrawing(mapRef: MapContainer) {
   // Redraw all elements on map (useful after loading project)
   // eslint-disable-next-line complexity
   const redrawAllElements = ({ fitBounds = true }: { fitBounds?: boolean } = {}) => {
+    const ui = useUIStore();
     // Clear only map layers using VectorSources, not the store (store is already populated)
     mapRef.routesSource?.value?.clear();
     mapRef.circlesSource?.value?.clear();
@@ -386,7 +387,9 @@ export function useDrawing(mapRef: MapContainer) {
     }
 
     const routes = layersStore.routes;
-    for (const route of routes) redrawRoute(route);
+    for (const route of routes) {
+      if (ui.isElementVisible('route', route.id)) redrawRoute(route);
+    }
     const circles = layersStore.circles;
     const lineSegments = layersStore.lineSegments;
     const points = layersStore.points;
@@ -394,7 +397,7 @@ export function useDrawing(mapRef: MapContainer) {
 
     // Redraw circles (using redraw helper to avoid adding to store twice)
     for (const circle of circles) {
-      if (circle.id) {
+      if (circle.id && ui.isElementVisible('circle', circle.id)) {
         circleDrawing.redrawCircleOnMap(
           circle.id,
           circle.center.lat,
@@ -407,7 +410,7 @@ export function useDrawing(mapRef: MapContainer) {
 
     // Redraw line segments (using redraw helper to avoid adding to store twice)
     for (const segment of lineSegments) {
-      if (segment.id) {
+      if (segment.id && ui.isElementVisible('lineSegment', segment.id)) {
         if (segment.mode === 'parallel' && segment.longitude !== undefined) {
           // Redraw parallel line
           lineDrawing.redrawParallelOnMap(segment.id, segment.longitude, segment.color);
@@ -430,14 +433,14 @@ export function useDrawing(mapRef: MapContainer) {
 
     // Redraw points (using redraw helper to avoid adding to store twice)
     for (const point of points) {
-      if (point.id) {
+      if (point.id && ui.isElementVisible('point', point.id)) {
         pointDrawing.redrawPointOnMap(point.id, point.coordinates.lat, point.coordinates.lon);
       }
     }
 
     // Redraw polygons (using redraw helper to avoid adding to store twice)
     for (const polygon of polygons) {
-      if (polygon.id) {
+      if (polygon.id && ui.isElementVisible('polygon', polygon.id)) {
         polygonDrawing.redrawPolygonOnMap(polygon.id, polygon.pointIds, polygon.color);
       }
     }

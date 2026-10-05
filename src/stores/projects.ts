@@ -5,6 +5,7 @@
 import type { ProjectData, ProjectLayerData, ProjectProjection, ViewData } from '@/types/project';
 import { defineStore } from 'pinia';
 import { computed, ref, watch } from 'vue';
+import { deleteProjectHistory } from '@/services/historyStorage';
 import { type ImageMap, writeImageMap } from '@/services/imageMap';
 import * as pdfStorage from '@/services/pdfStorage';
 import * as storage from '@/services/storage';
@@ -168,8 +169,13 @@ export const useProjectsStore = defineStore('projects', () => {
   }
 
   function deleteProject(index: number): void {
+    const id = projects.value[index]?.id;
     storage.deleteProject(index);
     loadProjects();
+    if (id)
+      void deleteProjectHistory(id).catch((error) =>
+        console.error('Failed to delete project history', error)
+      );
   }
 
   /**

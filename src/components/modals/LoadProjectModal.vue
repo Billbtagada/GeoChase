@@ -141,6 +141,11 @@ const isOpen = computed({
 });
 
 function loadProject(projectId: string) {
+  // Keep the live state and redo branch when selecting the project already open.
+  if (projectId === projectsStore.activeProjectId) {
+    closeModal();
+    return;
+  }
   const project = projectsStore.projects.find((p) => p.id === projectId);
   if (project) {
     try {

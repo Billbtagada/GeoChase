@@ -1,4 +1,12 @@
 {
+  "history": {
+    "title": "History",
+    "undo": "Undo",
+    "redo": "Redo",
+    "undoHint": "Undo — Ctrl/Cmd+Z ({count} steps)",
+    "redoHint": "Redo — Ctrl/Cmd+Shift+Z or Ctrl+Y ({count} steps)",
+    "storageError": "History could not be saved in this browser. It remains available for this session."
+  },
   "common": {
     "cancel": "Cancel",
     "save": "Save",
@@ -803,6 +811,7 @@
     "tipsSection": {
       "heading": "💡 Tips & Tricks",
       "keyboardShortcuts": {
+        "history": "Ctrl/Cmd+Z: undo; Ctrl/Cmd+Shift+Z or Ctrl+Y: redo. The ↶ and ↷ toolbar buttons do the same. Up to 1,000 steps for drawings, notes, groups, their visibility and projection. History is limited to 8 MiB per project; older steps are discarded when needed. History is saved locally with each project, survives reloads and is excluded from exports. Editing after undo discards the redo steps.",
         "title": "⌨️ Keyboard Shortcuts",
         "arrows": "Arrow Keys (← →) - Navigate along circles/lines during navigation mode",
         "z": "Z - Toggle precision mode (magnified lens view)",

@@ -1,4 +1,12 @@
 {
+  "history": {
+    "title": "Historique",
+    "undo": "Annuler",
+    "redo": "Rétablir",
+    "undoHint": "Annuler — Ctrl/Cmd+Z ({count} étapes)",
+    "redoHint": "Rétablir — Ctrl/Cmd+Maj+Z ou Ctrl+Y ({count} étapes)",
+    "storageError": "L’historique ne peut pas être sauvegardé dans ce navigateur. Il reste disponible pendant cette session."
+  },
   "common": {
     "cancel": "Annuler",
     "save": "Enregistrer",
@@ -803,6 +811,7 @@
     "tipsSection": {
       "heading": "💡 Trucs et astuces",
       "keyboardShortcuts": {
+        "history": "Ctrl/Cmd+Z : annuler ; Ctrl/Cmd+Maj+Z ou Ctrl+Y : rétablir. Les boutons ↶ et ↷ du bandeau font la même chose. Jusqu’à 1 000 étapes pour les tracés, notes, groupes, leur visibilité et la projection. La taille est limitée à 8 Mio par projet ; les étapes les plus anciennes sont supprimées si nécessaire. L’historique est sauvegardé localement dans chaque projet, conservé après rechargement et exclu des exports. Une nouvelle modification après annulation efface les étapes à rétablir.",
         "title": "⌨️ Raccourcis clavier",
         "arrows": "Touches fléchées (← →) - Naviguez le long des cercles/lignes en mode navigation",
         "z": "Z - Basculez le mode précision (vue loupe agrandie)",

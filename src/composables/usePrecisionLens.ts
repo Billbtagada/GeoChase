@@ -232,6 +232,7 @@ export function usePrecisionLens(mapRef: MapContainer, options: PrecisionLensOpt
   function handleKeyDown(event: KeyboardEvent) {
     // 'Z' key for precision mode
     if (event.key === 'z' || event.key === 'Z') {
+      if (event.defaultPrevented || event.ctrlKey || event.metaKey || event.altKey) return;
       // Don't activate if typing in an input
       const target = event.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {

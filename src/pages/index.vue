@@ -123,6 +123,7 @@ import { useAppSetup } from '@/composables/useAppSetup';
 import { useAutoSave } from '@/composables/useAutoSave';
 import { useDrawing } from '@/composables/useDrawing';
 import { useVisibilityShortcuts } from '@/composables/useElementVisibility';
+import { useHistory } from '@/composables/useHistory';
 import { useMap } from '@/composables/useMap';
 import { usePrecisionLens } from '@/composables/usePrecisionLens';
 import { useViewDataSync } from '@/composables/useViewDataSync';
@@ -248,6 +249,7 @@ const viewDataSync = useViewDataSync(mapContainer);
 
 // Create a ref for note tooltips (will be initialized after map is ready)
 const noteTooltipsRef = shallowRef<ReturnType<typeof useNoteTooltips> | null>(null);
+const history = useHistory(drawing, noteTooltipsRef);
 
 // Provide the map container, drawing functions, and note tooltips to all child components
 provide(mapKey, mapContainer);
@@ -348,6 +350,8 @@ onMounted(async () => {
     disposeApp();
     return;
   }
+  await history.start();
+  if (unmounted) return;
   disposeViewSync = viewDataSync.setupWatchers();
 });
 

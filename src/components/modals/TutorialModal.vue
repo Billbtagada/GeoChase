@@ -957,6 +957,7 @@ const DEFAULT_DATA: Section[] = [
         title: 'Raccourcis Clavier',
         icon: 'mdi-keyboard',
         items: [
+          { label: 'Ctrl/Cmd+Z', text: 'Annuler ou rétablir les modifications du projet' },
           { label: 'Échap', text: 'Annuler le tracé ou fermer la modale' },
           {
             label: 'Z',
@@ -1233,6 +1234,7 @@ const subsectionItemKeys: Record<string, string[]> = {
     'tutorial.guideContent.pdf.item7',
   ],
   'tips-shortcuts': [
+    'tutorial.tipsSection.keyboardShortcuts.history',
     'tutorial.tipsSection.keyboardShortcuts.esc',
     'tutorial.tipsSection.keyboardShortcuts.z',
     'tutorial.tipsSection.keyboardShortcuts.rightClick',

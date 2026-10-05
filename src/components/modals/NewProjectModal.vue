@@ -212,7 +212,9 @@ watch(
 );
 
 watch(
-  () => [projectsStore.activeProject, layersStore.exportLayers(), projection.value],
+  // Assigned projects use their own autosave. Do not deeply traverse their layers
+  // synchronously for every reference normalized while loading a large project.
+  () => (projectsStore.activeProject ? null : [layersStore.exportLayers(), projection.value]),
   () => {
     if (
       projectsStore.activeProject ||

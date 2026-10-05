@@ -154,6 +154,9 @@
 
           <div class="workspace-toolbar">
             <div :aria-label="$t('sidebar.drawings')" class="drawing-tools" role="group">
+              <HistoryControls />
+              <span aria-hidden="true" class="tool-divider" />
+
               <v-btn
                 v-for="tool in primaryTools"
                 :key="tool.modal"
@@ -328,6 +331,7 @@
 <script lang="ts" setup>
 import { computed, ref, watch } from 'vue';
 import { useI18n } from 'vue-i18n';
+import HistoryControls from '@/components/layout/HistoryControls.vue';
 import NavigationBar from '@/components/layout/NavigationBar.vue';
 import ThemePicker from '@/components/layout/ThemePicker.vue';
 import ImageMapModal from '@/components/modals/ImageMapModal.vue';

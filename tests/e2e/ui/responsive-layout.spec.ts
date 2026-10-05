@@ -20,6 +20,8 @@ async function expectAccessibleToolbar(page: Page) {
           if (rect.width < 32 || rect.height < 32)
             issues.push(`${control.textContent} is too small`);
           if (rect.right > innerWidth + 1) issues.push(`${control.textContent} overflows`);
+          // Disabled undo/redo buttons deliberately do not receive pointer events.
+          if (control.disabled) continue;
           const hit = document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2);
           if (!hit || !control.contains(hit)) issues.push(`${control.textContent} is covered`);
         }

@@ -382,6 +382,18 @@ describe('usePrecisionLens', () => {
       expect(lens.isActive.value).toBe(false);
     });
 
+    it('should deactivate even when Escape has already cancelled another tool', () => {
+      const lens = usePrecisionLens(mockMapRef);
+      mountedCallback?.();
+      lens.activate();
+
+      const event = new KeyboardEvent('keydown', { key: 'Escape', cancelable: true });
+      event.preventDefault();
+      window.dispatchEvent(event);
+
+      expect(lens.isActive.value).toBe(false);
+    });
+
     it('should not deactivate on Escape key when inactive', () => {
       const lens = usePrecisionLens(mockMapRef);
       mountedCallback?.();
