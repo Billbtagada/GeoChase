@@ -105,13 +105,38 @@ export const useProjectsStore = defineStore('projects', () => {
   }
 
   async function createImageProject(name: string, imageData?: unknown): Promise<void> {
-    createAndSwitchProject(name, 'mercator');
-    if (activeProject.value && activeProject.value.id) {
-      activeProject.value.imageMapEnabled = true;
-      if (imageData) {
-        await writeImageMap(activeProject.value.id, imageData as ImageMap);
-      }
-      autoSaveActiveProject(activeProject.value.data, activeProject.value.projection);
+    // 1. On crée d'abord un projet de base vide via storage
+    const newProject = storage.saveProject(
+      name,
+      {
+        elementGroups: [],
+        circles: [],
+        lineSegments: [],
+        points: [],
+        polygons: [],
+        notes: [],
+      },
+      'mercator'
+    );
+
+    // On marque explicitement que c'est un projet de type image map dès le départ
+    newProject.imageMapEnabled = true;
+
+    // 2. Si on a des données d'image, on les écrit D'ABORD dans IndexedDB de manière sécurisée
+    if (imageData && newProject.id) {
+      await writeImageMap(newProject.id, imageData as ImageMap);
+    }
+
+    // 3. Une fois que tout est bien enregistré, on l'ajoute à la liste locale et on l'active
+    projects.value.push(newProject);
+    if (newProject.id) {
+      setActiveProject(newProject.id);
+      storage.updateProject(
+        projects.value.indexOf(newProject),
+        newProject.name,
+        newProject.data,
+        newProject.projection
+      );
     }
   }
 
