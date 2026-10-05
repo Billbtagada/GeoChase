@@ -288,15 +288,17 @@
           @click="handlePdfClick"
         />
 
-        <v-divider class="my-1" />
+        <!-- Option de la légende IGN masquée si on utilise une carte image -->
+        <template v-if="!imageMaps.isImageProject">
+          <v-divider class="my-1" />
 
-        <!-- Option de la légende IGN intégrée dans le menu Alt + Clic -->
-        <v-list-item
-          data-testid="quick-ign-legend-btn"
-          prepend-icon="mdi-book-open-variant"
-          :title="$t('ignLegend.title')"
-          @click="handleOpenMapLegend"
-        />
+          <v-list-item
+            data-testid="quick-ign-legend-btn"
+            prepend-icon="mdi-book-open-variant"
+            :title="$t('ignLegend.title')"
+            @click="handleOpenMapLegend"
+          />
+        </template>
       </v-list>
     </v-menu>
 
@@ -320,8 +322,8 @@
   <ThemePicker v-model="themePickerOpen" />
   <ImageMapModal v-if="imageMapOpen" @close="closeImageMap" />
 
-  <!-- Ajout de la modale de légende IGN ici -->
-  <MapLegendModal ref="mapLegendRef" />
+  <!-- Modale de légende IGN chargée uniquement si on n'est pas en mode image -->
+  <MapLegendModal v-if="!imageMaps.isImageProject" ref="mapLegendRef" />
 </template>
 
 <script lang="ts" setup>
@@ -330,7 +332,7 @@ import { useI18n } from 'vue-i18n';
 import NavigationBar from '@/components/layout/NavigationBar.vue';
 import ThemePicker from '@/components/layout/ThemePicker.vue';
 import ImageMapModal from '@/components/modals/ImageMapModal.vue';
-import MapLegendModal from '@/components/modals/MapLegendModal.vue'; // <-- Import ajouté
+import MapLegendModal from '@/components/modals/MapLegendModal.vue';
 import SidebarAddressSearch from '@/components/sidebar/SidebarAddressSearch.vue';
 import { useProjectFiles } from '@/composables/useProjectFiles';
 import { useImageMapStore } from '@/stores/imageMap';

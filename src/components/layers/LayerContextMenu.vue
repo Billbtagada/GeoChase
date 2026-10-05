@@ -103,15 +103,6 @@
         <v-list-item-title>{{ $t('contextMenu.removeFromGroup') }}</v-list-item-title>
       </v-list-item>
 
-      <!-- IGN Map Legend -->
-      <v-list-item @click="handleOpenIgnLegend">
-        <template #prepend>
-          <v-icon icon="mdi-book-open-variant" size="small" />
-        </template>
-
-        <v-list-item-title>{{ $t('ignLegend.title') }}</v-list-item-title>
-      </v-list-item>
-
       <!-- Delete -->
       <v-list-item class="text-error" @click="handleDelete">
         <template #prepend>
@@ -352,11 +343,6 @@ function handleAddNote() {
     uiStore.openModal('noteModal');
   }
 
-  isOpen.value = false;
-}
-
-function handleOpenIgnLegend() {
-  uiStore.openModal('ignLegendModal');
   isOpen.value = false;
 }
 </script>

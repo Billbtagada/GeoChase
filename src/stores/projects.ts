@@ -127,7 +127,18 @@ export const useProjectsStore = defineStore('projects', () => {
         imageMapEnabled: enabled,
         updatedAt: Date.now(),
       };
-      storage.updateProject(index, current.name, current.data, current.projection);
+
+      // Assure la persistance complète incluant imageMapEnabled dans le storage
+      const allProjects = storage.getAllProjects();
+      const storageIndex = allProjects.findIndex((p) => p.id === current.id);
+      if (storageIndex !== -1 && allProjects[storageIndex]) {
+        allProjects[storageIndex] = {
+          ...allProjects[storageIndex],
+          imageMapEnabled: enabled,
+          updatedAt: Date.now(),
+        };
+        storage.saveProjectsToStorage(allProjects);
+      }
     }
   }
 
