@@ -25,13 +25,17 @@ for (const viewport of [
         'plum',
         'goldVelvet',
         'clockworkOrange',
+        'cyberpunk',
+        'vaporwaveNeon',
+        'christmasTree',
+        'strawberrymint',
       ];
       await page.getByRole('button', { name: 'More', exact: true }).click();
       await expect(page.getByTestId('theme-toggle')).toHaveCount(0);
       await page.getByTestId('theme-picker-btn').click();
       const dialog = page.getByRole('dialog');
       await expect(dialog).toBeVisible();
-      await expect(dialog.locator('.palette-option')).toHaveCount(14);
+      await expect(dialog.locator('.palette-option')).toHaveCount(palettes.length);
       const backgrounds = new Set<string>();
       for (const palette of palettes) {
         await page.getByTestId(`palette-${palette}`).click();
@@ -46,10 +50,10 @@ for (const viewport of [
             .evaluate((el) => getComputedStyle(el).backgroundColor)
         );
       }
-      expect(backgrounds.size).toBe(14);
+      expect(backgrounds.size).toBe(palettes.length);
       await dialog.getByRole('button', { name: 'Close', exact: true }).last().click();
       await page.reload();
-      await expect(page.locator('html')).toHaveAttribute('data-palette', 'clockworkOrange');
+      await expect(page.locator('html')).toHaveAttribute('data-palette', 'strawberrymint');
       await page.getByRole('button', { name: 'More', exact: true }).click();
       await page.getByTestId('theme-picker-btn').click();
       await page.getByTestId('palette-classic').click();
@@ -60,3 +64,17 @@ for (const viewport of [
     });
   });
 }
+
+test('Christmas animation respects reduced motion', async ({ page, blankProject }) => {
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.getByRole('button', { name: 'More', exact: true }).click();
+  await page.getByTestId('theme-picker-btn').click();
+  await page.getByTestId('palette-christmasTree').click();
+  const animationName = () =>
+    page
+      .getByTestId('draw-point-btn')
+      .evaluate((element) => getComputedStyle(element).animationName);
+  await expect.poll(animationName).toBe('multiColorGarland');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect.poll(animationName).toBe('none');
+});

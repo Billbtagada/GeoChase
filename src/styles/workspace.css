@@ -289,10 +289,12 @@ button.layers-section-title {
 }
 
 /* Fait clignoter les boutons du thème Sapin de Noël comme une guirlande électrique */
-[data-palette='christmasTree'] .v-btn,
-[data-palette='christmasTree'] button,
-[data-palette='christmasTree'] .ol-control button {
-  animation: multiColorGarland 1.2s infinite linear !important;
+@media (prefers-reduced-motion: no-preference) {
+  [data-palette='christmasTree'] .v-btn,
+  [data-palette='christmasTree'] button,
+  [data-palette='christmasTree'] .ol-control button {
+    animation: multiColorGarland 1.2s infinite linear !important;
+  }
 }
 
 [data-palette='christmasTree'] {

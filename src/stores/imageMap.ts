@@ -18,31 +18,21 @@ export const useImageMapStore = defineStore('imageMap', () => {
     () => projects.activeProjectId,
     async (id) => {
       image.value = null;
+      if (isImageProject.value) ui.mapProvider = 'image';
+      else if (ui.mapProvider === 'image') ui.mapProvider = 'geoportail';
       if (!id) {
         loading.value = false;
-        if (ui.mapProvider === 'image') ui.mapProvider = 'geoportail';
         return;
       }
-
       loading.value = true;
       try {
-        // On lit d'abord IndexedDB pour voir si une image existe pour ce projet
         const saved = await readImageMap(id);
         if (id !== projects.activeProjectId) return;
-
         image.value = saved;
-
-        // Si une image sauvegardée existe ou que le projet est marqué comme image, on bascule sur 'image'
-        if (saved || projects.activeProject?.imageMapEnabled) {
+        if (saved) {
           ui.mapProvider = 'image';
-          if (projects.activeProject && !projects.activeProject.imageMapEnabled) {
-            projects.setImageMapEnabled(true);
-          }
-        } else {
-          // Sinon seulement on repasse sur l'IGN si on était en mode image par erreur
-          if (ui.mapProvider === 'image') {
-            ui.mapProvider = 'geoportail';
-          }
+          // Recover image projects created without the flag by the previous version.
+          if (!projects.activeProject?.imageMapEnabled) projects.setImageMapEnabled(true);
         }
       } catch {
         if (id === projects.activeProjectId) image.value = null;

@@ -18,7 +18,6 @@
   <NoteModal v-if="uiStore.isModalOpen('noteModal')" />
   <LanguageModal />
   <TutorialModal />
-  <MapLegendModal v-if="uiStore.isModalOpen('ignLegendModal')" />
 </template>
 
 <script lang="ts" setup>
@@ -31,7 +30,6 @@ import FreeHandLineModal from '@/components/modals/FreeHandLineModal.vue';
 import IntersectionLineModal from '@/components/modals/IntersectionLineModal.vue';
 import LanguageModal from '@/components/modals/LanguageModal.vue';
 import LoadProjectModal from '@/components/modals/LoadProjectModal.vue';
-import MapLegendModal from '@/components/modals/MapLegendModal.vue';
 import NewProjectModal from '@/components/modals/NewProjectModal.vue';
 import NoteModal from '@/components/modals/NoteModal.vue';
 import ParallelLineModal from '@/components/modals/ParallelLineModal.vue';

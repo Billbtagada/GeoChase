@@ -288,8 +288,8 @@
           @click="handlePdfClick"
         />
 
-        <!-- Option de la légende IGN masquée si on utilise une carte image -->
-        <template v-if="!imageMaps.isImageProject">
+        <!-- The IGN legend only applies to the Geoportail basemap. -->
+        <template v-if="uiStore.mapProvider === 'geoportail'">
           <v-divider class="my-1" />
 
           <v-list-item
@@ -322,8 +322,7 @@
   <ThemePicker v-model="themePickerOpen" />
   <ImageMapModal v-if="imageMapOpen" @close="closeImageMap" />
 
-  <!-- Modale de légende IGN chargée uniquement si on n'est pas en mode image -->
-  <MapLegendModal v-if="!imageMaps.isImageProject" ref="mapLegendRef" />
+  <MapLegendModal v-if="uiStore.mapProvider === 'geoportail'" ref="mapLegendRef" />
 </template>
 
 <script lang="ts" setup>
