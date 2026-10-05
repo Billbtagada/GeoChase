@@ -32,6 +32,7 @@ declare module 'vue' {
     MapControls: typeof import('./components/layout/MapControls.vue')['default']
     MapEffects: typeof import('./components/ui/MapEffects.vue')['default']
     MapElementContextMenu: typeof import('./components/layers/MapElementContextMenu.vue')['default']
+    MapLegendModal: typeof import('./components/modals/MapLegendModal.vue')['default']
     ModalsContainer: typeof import('./components/ui/ModalsContainer.vue')['default']
     NavigationBar: typeof import('./components/layout/NavigationBar.vue')['default']
     NewProjectModal: typeof import('./components/modals/NewProjectModal.vue')['default']

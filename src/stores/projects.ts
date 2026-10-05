@@ -79,12 +79,13 @@ export const useProjectsStore = defineStore('projects', () => {
   function createAndSwitchProject(
     name: string,
     projection: ProjectProjection = 'mercator',
-    data?: ProjectLayerData
+    initialData?: ProjectLayerData
   ): void {
-    // Always generate a fresh identity, including when importing an existing export.
+    // Create new project with empty state (using elementGroups) and get the returned project
     const newProject = storage.saveProject(
       name,
-      data ?? {
+      initialData || {
+        elementGroups: [],
         circles: [],
         lineSegments: [],
         points: [],
@@ -103,20 +104,67 @@ export const useProjectsStore = defineStore('projects', () => {
     }
   }
 
-  async function createImageProject(name: string, image: ImageMap): Promise<void> {
-    const project = storage.createProject(name, {
-      circles: [],
-      lineSegments: [],
-      points: [],
-      polygons: [],
-      notes: [],
-    });
-    project.imageMapEnabled = true;
-    // Write the image before publishing the project or changing the active workspace.
-    await writeImageMap(project.id!, image);
-    storage.saveProjectsToStorage([...storage.getAllProjects(), project]);
-    projects.value.push(project);
-    setActiveProject(project.id!);
+  async function createImageProject(name: string, imageData?: unknown): Promise<void> {
+    // 1. On crée d'abord un projet de base vide via storage
+    const newProject = storage.saveProject(
+      name,
+      {
+        elementGroups: [],
+        circles: [],
+        lineSegments: [],
+        points: [],
+        polygons: [],
+        notes: [],
+      },
+      'mercator'
+    );
+
+    // On marque explicitement que c'est un projet de type image map dès le départ
+    newProject.imageMapEnabled = true;
+
+    // 2. Si on a des données d'image, on les écrit D'ABORD dans IndexedDB de manière sécurisée
+    if (imageData && newProject.id) {
+      await writeImageMap(newProject.id, imageData as ImageMap);
+    }
+
+    // 3. Une fois que tout est bien enregistré, on l'ajoute à la liste locale et on l'active
+    projects.value.push(newProject);
+    if (newProject.id) {
+      setActiveProject(newProject.id);
+      storage.updateProject(
+        projects.value.indexOf(newProject),
+        newProject.name,
+        newProject.data,
+        newProject.projection
+      );
+    }
+  }
+
+  function setImageMapEnabled(enabled: boolean): void {
+    if (!activeProjectId.value || !activeProject.value) {
+      return;
+    }
+    const current = activeProject.value;
+    const index = projects.value.indexOf(current);
+    if (index !== -1) {
+      projects.value[index] = {
+        ...current,
+        imageMapEnabled: enabled,
+        updatedAt: Date.now(),
+      };
+
+      // Assure la persistance complète incluant imageMapEnabled dans le storage
+      const allProjects = storage.getAllProjects();
+      const storageIndex = allProjects.findIndex((p) => p.id === current.id);
+      if (storageIndex !== -1 && allProjects[storageIndex]) {
+        allProjects[storageIndex] = {
+          ...allProjects[storageIndex],
+          imageMapEnabled: enabled,
+          updatedAt: Date.now(),
+        };
+        storage.saveProjectsToStorage(allProjects);
+      }
+    }
   }
 
   function autoSaveActiveProject(
@@ -142,17 +190,6 @@ export const useProjectsStore = defineStore('projects', () => {
         };
       }
     }
-  }
-
-  function setImageMapEnabled(enabled: boolean): void {
-    const current = activeProject.value;
-    if (!current) return;
-    const saved = storage.getAllProjects();
-    const index = saved.findIndex((p) => p.id === current.id);
-    if (index === -1) return;
-    saved[index] = { ...saved[index]!, imageMapEnabled: enabled };
-    storage.saveProjectsToStorage(saved);
-    current.imageMapEnabled = enabled;
   }
 
   function loadActiveProject(): void {
@@ -316,9 +353,9 @@ export const useProjectsStore = defineStore('projects', () => {
     setActiveProject,
     createAndSwitchProject,
     createImageProject,
+    setImageMapEnabled,
     autoSaveActiveProject,
     loadActiveProject,
-    setImageMapEnabled,
     updateProject,
     deleteProject,
     updateViewData,

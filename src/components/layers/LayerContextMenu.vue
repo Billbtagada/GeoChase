@@ -200,7 +200,6 @@ function handleToggleVisibility() {
   const element = getElement();
   if (element) {
     const isNowVisible = uiStore.isElementVisible(props.elementType, props.elementId);
-    // Update the map visibility through the drawing composable
     drawing.updateElementVisibility(props.elementType, props.elementId, isNowVisible);
     uiStore.addToast(
       t(isNowVisible ? 'toasts.elementVisible' : 'toasts.elementHidden', { name: element.name }),
@@ -228,9 +227,6 @@ function handleAddPointOnSegment() {
     return;
   }
 
-  // Get reference to the AddPointOnSegmentModal and call its openModal function
-  // We need to emit an event or use a different approach since we can't directly reference the modal
-  // The best approach is to use UIStore to track which segment to open the modal for
   uiStore.openModal('addPointOnSegmentModal');
   uiStore.setSelectedSegmentForPointCreation(props.elementId);
   isOpen.value = false;
@@ -257,7 +253,6 @@ function handleAddCenterAsPoint() {
     return;
   }
 
-  // Calculate polygon center by resolving point IDs to coordinates
   const points = polygon.pointIds
     .map((pointId) => layersStore.points.find((p) => p.id === pointId)?.coordinates)
     .filter((p): p is { lat: number; lon: number } => p !== undefined);
@@ -272,7 +267,6 @@ function handleAddCenterAsPoint() {
   const centerLat = sumLat / points.length;
   const centerLon = sumLon / points.length;
 
-  // Create point at center
   if (drawing) {
     const pointName = t('polygon.centerPointName', { name: polygon.name });
     drawing.drawPoint(centerLat, centerLon, pointName);
@@ -336,18 +330,15 @@ function handleAddNote() {
   const element = getElement();
 
   if (element?.noteId) {
-    // Element already has a note - edit it
     const note = layersStore.notes.find((n) => n.id === element.noteId);
     if (note) {
       uiStore.startEditing('note', note.id);
       uiStore.openModal('noteModal');
     } else {
-      // Note ID exists but note not found - create new one
       uiStore.setNotePreFill(props.elementType, props.elementId);
       uiStore.openModal('noteModal');
     }
   } else {
-    // No note exists - create new one
     uiStore.setNotePreFill(props.elementType, props.elementId);
     uiStore.openModal('noteModal');
   }

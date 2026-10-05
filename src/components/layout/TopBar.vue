@@ -242,6 +242,66 @@
       </div>
     </v-navigation-drawer>
 
+    <!-- Menu contextuel Alt + Clic -->
+    <v-menu
+      data-testid="quick-tools-context-menu"
+      location="bottom"
+      :model-value="Boolean(uiStore.quickToolsMenuPosition)"
+      :target="quickToolsMenuTarget"
+      @update:model-value="setQuickToolsMenuVisibility"
+    >
+      <v-list density="compact" min-width="220">
+        <v-list-item
+          v-for="tool in primaryTools"
+          :key="tool.modal"
+          :data-testid="`quick-${tool.testId}`"
+          :prepend-icon="tool.icon"
+          :title="$t(tool.label)"
+          @click="uiStore.openModal(tool.modal)"
+        />
+
+        <v-divider class="my-1" />
+        <v-list-subheader>{{ $t('workspace.construct') }}</v-list-subheader>
+
+        <v-list-item
+          v-for="tool in advancedTools"
+          :key="tool.modal"
+          :data-testid="`quick-${tool.modal}-btn`"
+          :prepend-icon="tool.icon"
+          :title="$t(tool.title)"
+          @click="uiStore.openModal(tool.modal)"
+        />
+
+        <v-divider class="my-1" />
+
+        <v-list-item
+          data-testid="quick-create-note-btn"
+          prepend-icon="mdi-note-text-outline"
+          :title="$t('common.note')"
+          @click="handleCreateNote"
+        />
+
+        <v-list-item
+          data-testid="quick-pdf-btn"
+          prepend-icon="mdi-file-document-outline"
+          :title="$t('workspace.pdf')"
+          @click="handlePdfClick"
+        />
+
+        <!-- Option de la légende IGN masquée si on utilise une carte image -->
+        <template v-if="!imageMaps.isImageProject">
+          <v-divider class="my-1" />
+
+          <v-list-item
+            data-testid="quick-ign-legend-btn"
+            prepend-icon="mdi-book-open-variant"
+            :title="$t('ignLegend.title')"
+            @click="handleOpenMapLegend"
+          />
+        </template>
+      </v-list>
+    </v-menu>
+
     <div
       v-if="!uiStore.toolInstructionsVisible"
       class="topbar-toggle-wrap"
@@ -261,6 +321,9 @@
 
   <ThemePicker v-model="themePickerOpen" />
   <ImageMapModal v-if="imageMapOpen" @close="closeImageMap" />
+
+  <!-- Modale de légende IGN chargée uniquement si on n'est pas en mode image -->
+  <MapLegendModal v-if="!imageMaps.isImageProject" ref="mapLegendRef" />
 </template>
 
 <script lang="ts" setup>
@@ -269,6 +332,7 @@ import { useI18n } from 'vue-i18n';
 import NavigationBar from '@/components/layout/NavigationBar.vue';
 import ThemePicker from '@/components/layout/ThemePicker.vue';
 import ImageMapModal from '@/components/modals/ImageMapModal.vue';
+import MapLegendModal from '@/components/modals/MapLegendModal.vue';
 import SidebarAddressSearch from '@/components/sidebar/SidebarAddressSearch.vue';
 import { useProjectFiles } from '@/composables/useProjectFiles';
 import { useImageMapStore } from '@/stores/imageMap';
@@ -282,6 +346,13 @@ const toolbarContent = ref<HTMLElement | null>(null);
 const toolbarHeight = ref(64);
 const normalToolbarContent = ref<HTMLElement | null>(null);
 const normalToolbarHeight = ref(134);
+
+// Référence et fonction pour la légende IGN
+const mapLegendRef = ref<InstanceType<typeof MapLegendModal> | null>(null);
+
+function handleOpenMapLegend() {
+  mapLegendRef.value?.open();
+}
 
 watch(normalToolbarContent, (element, _, onCleanup) => {
   if (!element) return;
@@ -310,6 +381,14 @@ watch(toolbarContent, (element, _, onCleanup) => {
 const { t } = useI18n();
 const uiStore = useUIStore();
 const projectsStore = useProjectsStore();
+const quickToolsMenuTarget = computed<[number, number] | undefined>(() => {
+  const position = uiStore.quickToolsMenuPosition;
+  return position ? [position.x, position.y] : undefined;
+});
+
+function setQuickToolsMenuVisibility(open: boolean) {
+  if (!open) uiStore.quickToolsMenuPosition = null;
+}
 
 const primaryTools = [
   {
@@ -401,19 +480,16 @@ const {
 } = useProjectFiles();
 
 function handlePdfClick() {
-  // If no active project, show error
   if (!projectsStore.activeProjectId) {
     uiStore.addToast(t('pdf.noProject'), 'error');
     return;
   }
 
-  // If project has PDF, toggle the panel
   if (projectsStore.hasPdf()) {
     uiStore.togglePdfPanel();
     return;
   }
 
-  // Otherwise, open file picker to upload PDF
   const input = document.createElement('input');
   input.type = 'file';
   input.accept = 'application/pdf';
@@ -423,15 +499,13 @@ function handlePdfClick() {
       return;
     }
 
-    // Check file size (limit to 50MB for IndexedDB)
-    const MAX_SIZE = 50 * 1024 * 1024; // 50MB
+    const MAX_SIZE = 50 * 1024 * 1024;
     if (file.size > MAX_SIZE) {
       uiStore.addToast(t('pdf.tooLarge'), 'error');
       return;
     }
 
     try {
-      // Convert to base64
       const reader = new FileReader();
       reader.addEventListener('load', async () => {
         const base64 = reader.result as string;
