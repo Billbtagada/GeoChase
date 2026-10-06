@@ -171,7 +171,7 @@ function closeModal() {
           @update:model-value="handleToggleAutoDisplay"
         ></v-checkbox>
 
-        <v-btn color="primary" variant="flat" @click="closeModal"> Compris, fermer </v-btn>
+        <v-btn color="primary" variant="flat" @click="closeModal"> Fermer </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
