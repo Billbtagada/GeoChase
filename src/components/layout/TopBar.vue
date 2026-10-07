@@ -152,7 +152,7 @@
                   <v-list-item
                     data-testid="release-notes-btn"
                     prepend-icon="mdi-information-outline"
-                    title="Nouveautés"
+                    :title="$t('topbar.releaseNotes')"
                     @click="uiStore.openModal('releaseNotesModal')"
                   ></v-list-item>
 

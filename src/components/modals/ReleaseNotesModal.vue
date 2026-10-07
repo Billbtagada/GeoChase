@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue';
-import rawReleaseNotes from '@/data/releaseNotes.json';
+import { useI18n } from 'vue-i18n';
+import rawReleaseNotesEn from '@/data/releaseNotes.en.json';
+import rawReleaseNotesFr from '@/data/releaseNotes.fr.json';
 import { useUIStore } from '@/stores/ui';
 
 interface Section {
@@ -15,14 +17,17 @@ interface ReleaseNote {
   sections: Section[];
 }
 
+const { t, locale } = useI18n();
 const uiStore = useUIStore();
 
-// Normalisation du JSON avec typage explicite (sans 'any')
-const releaseNotesData: ReleaseNote[] = Array.isArray(rawReleaseNotes)
-  ? (rawReleaseNotes as ReleaseNote[])
-  : (rawReleaseNotes as { default: ReleaseNote[] })?.default || [];
+// Sélection dynamique du fichier JSON selon la langue active ('fr' ou 'en')
+const releaseNotesData = computed<ReleaseNote[]>(() => {
+  const raw = locale.value === 'en' ? rawReleaseNotesEn : rawReleaseNotesFr;
+  return Array.isArray(raw)
+    ? (raw as ReleaseNote[])
+    : (raw as { default: ReleaseNote[] })?.default || [];
+});
 
-// Liaison avec le store UI
 const isOpen = computed({
   get: () => uiStore.isModalOpen('releaseNotesModal'),
   set: (val: boolean) => {
@@ -55,18 +60,17 @@ onMounted(() => {
     autoDisplayEnabled.value = savedAutoDisplay === 'true';
   }
 
-  const newestVersion = releaseNotesData[0]?.version;
+  const notes = releaseNotesData.value;
+  const newestVersion = notes[0]?.version;
   if (!newestVersion) return;
 
-  // 1. Première visite : enregistrer la version de référence SANS ouvrir la modale
   if (!savedVersion) {
     localStorage.setItem('lastSeenReleaseNoteVersion', newestVersion);
     return;
   }
 
-  // 2. Visites ultérieures : ouvrir uniquement si version supérieure ET affichage auto activé
   if (autoDisplayEnabled.value && compareVersions(newestVersion, savedVersion) > 0) {
-    displayedNotes.value = releaseNotesData.filter(
+    displayedNotes.value = notes.filter(
       (note: ReleaseNote) => compareVersions(note.version, savedVersion) > 0
     );
 
@@ -88,7 +92,7 @@ const currentNotesList = computed(() => {
   if (isAutoOpened.value && displayedNotes.value.length > 0) {
     return displayedNotes.value;
   }
-  return releaseNotesData;
+  return releaseNotesData.value;
 });
 
 function handleToggleAutoDisplay(val: boolean | null) {
@@ -99,11 +103,11 @@ function handleToggleAutoDisplay(val: boolean | null) {
 function closeModal() {
   uiStore.closeModal('releaseNotesModal');
 
-  if (releaseNotesData.length > 0) {
-    const newestVersion = releaseNotesData[0].version;
+  const notes = releaseNotesData.value;
+  if (notes.length > 0) {
+    const newestVersion = notes[0].version;
     const savedVersion = localStorage.getItem('lastSeenReleaseNoteVersion');
 
-    // Mise à jour de la version vue sans faire régresser une version déjà enregistrée
     if (!savedVersion || compareVersions(newestVersion, savedVersion) > 0) {
       localStorage.setItem('lastSeenReleaseNoteVersion', newestVersion);
     }
@@ -115,13 +119,12 @@ function closeModal() {
 </script>
 
 <template>
-  <!-- eslint-disable @intlify/vue-i18n/no-raw-text -->
   <v-dialog v-model="isOpen" max-width="700px" scrollable>
     <v-card class="rounded-lg" color="surface">
       <!-- En-tête -->
       <v-card-title class="d-flex align-center justify-space-between pa-4 border-b">
         <div class="text-h6 font-weight-bold d-flex align-center gap-2">
-          🚀 Nouveautés de GeoChase
+          {{ t('releaseNotes.title') }}
         </div>
 
         <v-btn density="comfortable" icon="mdi-close" variant="text" @click="closeModal"></v-btn>
@@ -137,7 +140,7 @@ function closeModal() {
           >
             <div class="d-flex align-baseline justify-space-between mb-1">
               <span class="text-h6 font-weight-bold text-primary">
-                Version {{ release.version }}
+                {{ t('releaseNotes.version', { version: release.version }) }}
               </span>
 
               <span class="text-caption text-medium-emphasis">{{ release.date }}</span>
@@ -162,7 +165,7 @@ function closeModal() {
         </template>
 
         <div v-else class="text-center py-8 text-medium-emphasis">
-          Aucune note de version disponible.
+          {{ t('releaseNotes.empty') }}
         </div>
       </v-card-text>
 
@@ -174,12 +177,14 @@ function closeModal() {
           color="primary"
           density="compact"
           hide-details
-          label="Ne plus afficher automatiquement les nouveautés"
+          :label="t('releaseNotes.autoDisplay')"
           :model-value="!autoDisplayEnabled"
           @update:model-value="handleToggleAutoDisplay"
         ></v-checkbox>
 
-        <v-btn color="primary" variant="flat" @click="closeModal"> Fermer </v-btn>
+        <v-btn color="primary" variant="flat" @click="closeModal">
+          {{ t('releaseNotes.close') }}
+        </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
