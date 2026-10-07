@@ -58,15 +58,17 @@ onMounted(() => {
   const newestVersion = releaseNotesData[0]?.version;
   if (!newestVersion) return;
 
-  if (
-    !savedVersion ||
-    (autoDisplayEnabled.value && compareVersions(newestVersion, savedVersion) > 0)
-  ) {
-    displayedNotes.value = savedVersion
-      ? releaseNotesData.filter(
-          (note: ReleaseNote) => compareVersions(note.version, savedVersion) > 0
-        )
-      : releaseNotesData;
+  // 1. Première visite : enregistrer la version de référence SANS ouvrir la modale
+  if (!savedVersion) {
+    localStorage.setItem('lastSeenReleaseNoteVersion', newestVersion);
+    return;
+  }
+
+  // 2. Visites ultérieures : ouvrir uniquement si version supérieure ET affichage auto activé
+  if (autoDisplayEnabled.value && compareVersions(newestVersion, savedVersion) > 0) {
+    displayedNotes.value = releaseNotesData.filter(
+      (note: ReleaseNote) => compareVersions(note.version, savedVersion) > 0
+    );
 
     if (displayedNotes.value.length > 0) {
       isAutoOpened.value = true;
@@ -96,13 +98,19 @@ function handleToggleAutoDisplay(val: boolean | null) {
 
 function closeModal() {
   uiStore.closeModal('releaseNotesModal');
-  isAutoOpened.value = false;
-  displayedNotes.value = [];
 
   if (releaseNotesData.length > 0) {
     const newestVersion = releaseNotesData[0].version;
-    localStorage.setItem('lastSeenReleaseNoteVersion', newestVersion);
+    const savedVersion = localStorage.getItem('lastSeenReleaseNoteVersion');
+
+    // Mise à jour de la version vue sans faire régresser une version déjà enregistrée
+    if (!savedVersion || compareVersions(newestVersion, savedVersion) > 0) {
+      localStorage.setItem('lastSeenReleaseNoteVersion', newestVersion);
+    }
   }
+
+  isAutoOpened.value = false;
+  displayedNotes.value = [];
 }
 </script>
 
