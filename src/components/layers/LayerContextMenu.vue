@@ -165,7 +165,6 @@ function saveAppearance(color: string, weight: number) {
   const element = getElement();
   if (!element) return;
 
-  // Mise à jour de la couleur et de l'épaisseur dans le store et redessin sur la carte
   const updatedElement = {
     ...element,
     color,
@@ -175,30 +174,28 @@ function saveAppearance(color: string, weight: number) {
   switch (props.elementType) {
     case 'route': {
       layersStore.updateRoute(props.elementId, updatedElement as RouteElement);
-      if (uiStore.isElementVisible('route', props.elementId))
+      if (uiStore.isElementVisible('route', props.elementId)) {
         drawing.redrawRoute(updatedElement as RouteElement);
+      }
       break;
     }
     case 'lineSegment': {
-      layersStore.updateLine(props.elementId, updatedElement as LineSegmentElement);
-      if (uiStore.isElementVisible('lineSegment', props.elementId))
-        drawing.redrawLine(updatedElement as LineSegmentElement);
+      layersStore.updateLineSegment(props.elementId, updatedElement as LineSegmentElement);
       break;
     }
     case 'circle': {
       layersStore.updateCircle(props.elementId, updatedElement as CircleElement);
-      if (uiStore.isElementVisible('circle', props.elementId))
-        drawing.redrawCircle(updatedElement as CircleElement);
       break;
     }
     case 'polygon': {
       layersStore.updatePolygon(props.elementId, updatedElement as PolygonElement);
-      if (uiStore.isElementVisible('polygon', props.elementId))
-        drawing.redrawPolygon(updatedElement as PolygonElement);
       break;
     }
   }
+
+  drawing.updateElementColor(props.elementType, props.elementId, color);
 }
+
 const uiStore = useUIStore();
 const layersStore = useLayersStore();
 const drawing = useDrawingContext();
