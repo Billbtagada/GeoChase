@@ -1183,7 +1183,7 @@
     "error": "Impossible de modifier cette ligne d’intersection. Vérifiez ses constructions liées."
   },
   "drawingColor": {
-    "title": "Couleur du tracé",
+    "title": "Apparence",
     "palette": "Palette",
     "recent": "Dernières couleurs",
     "custom": "Couleur personnalisée",

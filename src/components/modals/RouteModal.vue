@@ -94,22 +94,6 @@
       variant="outlined"
     />
 
-    <!-- Curseur pour l'épaisseur du trait -->
-    <div class="mb-2 text-subtitle-2 font-weight-medium">{{ weightLabel }}: {{ weight }}px</div>
-
-    <v-slider
-      v-model="weight"
-      class="mb-4"
-      color="primary"
-      density="compact"
-      :disabled="busy"
-      hide-details
-      :max="20"
-      :min="1"
-      :step="1"
-      thumb-label
-    />
-
     <v-progress-linear v-if="busy" class="mb-4" color="primary" indeterminate />
     <v-alert v-if="error" role="alert" type="error">{{ error }}</v-alert>
   </BaseModal>
@@ -141,9 +125,7 @@ const intermediates = ref<Array<{ id: string; value: string | null }>>(
   (editing?.intermediates ?? []).map((point) => ({ id: uuidv4(), value: coord(point) }))
 );
 
-const weight = ref<number>(editing?.weight ?? 4);
-
-// Textes localisés sans utiliser le symbole \$ dans le template
+// Textes localisés
 const cancelText = computed(() => t('common.cancel'));
 const submitText = computed(() => (busy.value ? t('route.calculating') : t('route.calculate')));
 const titleText = computed(() => t('route.title'));
@@ -154,7 +136,6 @@ const startLabel = computed(() => t('route.start'));
 const endLabel = computed(() => t('route.end'));
 const profileLabel = computed(() => t('route.profile'));
 const optimizationLabel = computed(() => t('route.optimization'));
-const weightLabel = computed(() => t('route.weight'));
 const addStepText = computed(() => t('route.addStep'));
 
 const getStepLabel = (index: number) => t('route.step', { number: index + 1 });
@@ -249,7 +230,7 @@ async function submit() {
       end: endpoint,
       intermediates: waypoints,
       color: editing?.color ?? '#1976D2',
-      weight: weight.value,
+      weight: editing?.weight ?? 4,
     };
     if (editing) layers.updateRoute(routeElement.id, routeElement);
     else layers.addRoute(routeElement);

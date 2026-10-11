@@ -1184,7 +1184,7 @@
     "error": "Could not update this intersection line. Check its linked constructions."
   },
   "drawingColor": {
-    "title": "Drawing color",
+    "title": "Appearance",
     "palette": "Palette",
     "recent": "Recent colors",
     "custom": "Custom color",
