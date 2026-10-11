@@ -29,7 +29,11 @@
           >
             <div aria-label="GeoChase" class="brand">
               <span class="brand-symbol">
-                <v-icon icon="mdi-compass-outline" size="27"></v-icon>
+                <img
+                  alt="Logo"
+                  src="@/assets/logo.png"
+                  style="width: 37px; height: 37px; object-fit: contain"
+                />
               </span>
 
               <div>

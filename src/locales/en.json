@@ -1216,7 +1216,8 @@
     "addStep": "Add stop",
     "removeStep": "Remove stop {number}",
     "moveUp": "Move stop {number} up",
-    "moveDown": "Move stop {number} down"
+    "moveDown": "Move stop {number} down",
+    "weight": "Line width (px)"
   },
   "game": {
     "tank": "Tank",

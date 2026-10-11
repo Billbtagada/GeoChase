@@ -1215,7 +1215,8 @@
     "addStep": "Ajouter une étape",
     "removeStep": "Supprimer l’étape {number}",
     "moveUp": "Monter l’étape {number}",
-    "moveDown": "Descendre l’étape {number}"
+    "moveDown": "Descendre l’étape {number}",
+    "weight": "Épaisseur du trait (px)"
   },
   "game": {
     "tank": "Char",
