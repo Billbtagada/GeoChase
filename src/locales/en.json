@@ -1258,7 +1258,8 @@
       "cyberpunk": "Cyberpunk",
       "vaporwaveNeon": "Vaporwave Neon",
       "christmasTree": "Christmas Tree",
-      "strawberrymint": "strawberry mint"
+      "strawberrymint": "strawberry mint",
+      "halloween": "Halloween"
     },
     "regularizeProjectTitle": "Save your work",
     "regularizeProjectDescription": "Your elements do not belong to a project. Name your project to keep them and continue.",
