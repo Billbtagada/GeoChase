@@ -347,17 +347,17 @@ button.layers-section-title {
     opacity: 0;
   }
   15% {
-    opacity: 0.8;
+    opacity: 0.4;
   }
   /* Arrivée au centre (à 50% du cycle) : GROSSE EXPLOSION / JUMPSCARE */
   48% {
     transform: translate(45vw, 42vh) scale(1.2);
-    opacity: 1;
+    opacity: 0.5;
     filter: drop-shadow(0 0 20px #39ff14);
   }
   50% {
     transform: translate(50vw, 50vh) scale(4.5) rotate(15deg);
-    opacity: 1;
+    opacity: 0.55;
     filter: drop-shadow(0 0 60px #ff0000) drop-shadow(0 0 90px #39ff14) brightness(2);
   }
   /* Disparition subite après l'explosion */
