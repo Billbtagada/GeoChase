@@ -1,5 +1,12 @@
 <template>
-  <v-menu v-model="isOpen" :close-on-content-click="false" location="bottom" :target="position">
+  <v-menu
+    v-model="isOpen"
+    attach="body"
+    :close-on-content-click="false"
+    location="bottom"
+    :target="position"
+    :z-index="3000"
+  >
     <template v-if="!position" #activator="{ props: activatorProps }">
       <v-btn
         v-bind="activatorProps"
@@ -12,7 +19,7 @@
 
     <v-list density="compact">
       <!-- Visibility toggle -->
-      <v-list-item @click="handleToggleVisibility">
+      <v-list-item data-testid="toggle-element-visibility" @click="handleToggleVisibility">
         <template #prepend>
           <v-icon :icon="isVisible ? 'mdi-eye' : 'mdi-eye-off'" size="small" />
         </template>
